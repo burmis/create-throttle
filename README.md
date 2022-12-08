@@ -43,7 +43,9 @@ Run this command to print out all available tasks.
 deno task
 ```
 
-> Note: In order to publish an update or new version, you must increment `VERSION` within `version.ts` in the root directory.
-> ``` 
-> export const VERSION = x.x.x; // Increment me accordingly 
+> Note: In order to publish an update or new version, you must increment
+> `VERSION` within `version.ts` in the root directory.
+>
+> ```
+> export const VERSION = x.x.x; // Increment me accordingly
 > ```
