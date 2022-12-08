@@ -1,3 +1,5 @@
+[![Test Deno Module](https://github.com/burmis/create-throttle/actions/workflows/test.yml/badge.svg)](https://github.com/burmis/create-throttle/actions/workflows/test.yml)
+
 # create-throttle hook
 
 This package contains a function you can use to create a throttle. Once a
