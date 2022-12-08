@@ -1,5 +1,6 @@
 {
   "tasks": {
-    "build": "deno run -A scripts/build_npm.ts 0.1.0"
+    "build": "deno run -A scripts/build_npm.ts 0.1.0",
+    "publish": "deno task build && cd npm && npm publish"
   }
 }
