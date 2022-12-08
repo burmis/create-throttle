@@ -1,5 +1,6 @@
 // ex. scripts/build_npm.ts
 import { build, emptyDir } from "https://deno.land/x/dnt@0.32.0/mod.ts";
+import { VERSION } from "../version.ts";
 
 await emptyDir("./npm");
 
@@ -13,7 +14,7 @@ await build({
   package: {
     // package.json properties
     name: "@burmis/create-throttle",
-    version: Deno.args[0],
+    version: VERSION,
     description:
       "Throttle calls to a given function to ensure that they do not happen too often.",
     license: "MIT",
