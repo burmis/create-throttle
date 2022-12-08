@@ -1,7 +1,17 @@
 {
   "tasks": {
-    "build": "deno run -A scripts/build_npm.ts 0.1.0",
+    "build": "deno run -A scripts/build_npm.ts",
     "publish": "deno test && deno task build && cd npm && npm publish --access public"
+  },
+  "fmt": {
+    "files": {
+      "exclude": ["npm"]
+    }
+  },
+  "lint": {
+    "files": {
+      "exclude": ["npm"]
+    }
   },
   "test": {
     "files": {
