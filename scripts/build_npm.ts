@@ -12,7 +12,7 @@ await build({
   },
   package: {
     // package.json properties
-    name: "create-throttle",
+    name: "@burmis/create-throttle",
     version: Deno.args[0],
     description:
       "Throttle calls to a given function to ensure that they do not happen too often.",
