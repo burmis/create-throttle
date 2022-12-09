@@ -31,18 +31,6 @@ deno task check
 
 ## Publishing to NPM
 
-When you're ready to release a new version, start be updating the `VERSION` in
-`version.ts` in the root directory. We use
-[Semantic Versioning](https://semver.org/) so remember to increment the third
-number for bug fixes, the second number for new features, and the first number
-for breaking changes.
-
-```js
-export const VERSION = x.x.x; // Increment me accordingly
-```
-
-Then run the following command to publish to NPM.
-
 ```bash
 deno task publish
 ```
@@ -54,3 +42,10 @@ Run this command to print out all available tasks.
 ```bash
 deno task
 ```
+
+> Note: In order to publish an update or new version, you must increment
+> `VERSION` within `version.ts` in the root directory.
+>
+> ```
+> export const VERSION = x.x.x; // Increment me accordingly
+> ```
