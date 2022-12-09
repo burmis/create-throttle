@@ -5,7 +5,7 @@ import { TimeError } from 'https://deno.land/std@0.165.0/testing/time.ts';
 // TODO: CLEAN UP FILE SOMEHOW (move helper functions to seperate file and import?)
 
 // Promise function for testing.
-const test = async (testNum:number): Promise<any> => {
+const test = (): Promise<any> => {
   return new Promise((resolve) => {
     resolve("");
   })
@@ -42,7 +42,7 @@ async function testThrottle(intervalCallLimit: number, intervalTime:number, invo
   let actualInvokeCount = 0;
 
   while (actualInvokeCount < invokeCount) {
-    await throttleTimingTest(() => test(actualInvokeCount)).then(() => {
+    await throttleTimingTest(() => test()).then(() => {
       actualInvokeCount++;
     });
   }
