@@ -66,8 +66,12 @@ async function testThrottle(intervalCallLimit: number, intervalTime:number, invo
 }
 
 Deno.test(async function TestThrottle() {
-  assertEquals(await testThrottle(1, 10, 3), true);
-  assertEquals(await testThrottle(5, 800, 10), true);
-  assertEquals(await testThrottle(5, 200, 15), true);
-  assertEquals(await testThrottle(50, 100, 10), true);
+  // Run five random tests
+  for (let i = 0; i < 5; i++) {
+    const limit = Math.floor(Math.random() * 10) + 1;
+    const interval = Math.floor(Math.random() * 200) + 1;
+    const invokeCount = Math.floor(Math.random() * 10) + 1;
+
+    assertEquals(await testThrottle(limit, interval, invokeCount), true);
+  }
 })
