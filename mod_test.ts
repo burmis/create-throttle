@@ -5,9 +5,9 @@ import { TimeError } from 'https://deno.land/std@0.165.0/testing/time.ts';
 // TODO: CLEAN UP FILE SOMEHOW (move helper functions to seperate file and import?)
 
 // Promise function for testing.
-const test = (): Promise<any> => {
+const testPromise = (): Promise<any> => {
   return new Promise((resolve) => {
-    resolve("");
+    resolve(null);
   })
 };
 //end
@@ -19,7 +19,7 @@ const throttleReturnTest = createThrottle({
 })
 
 Deno.test(function createThrottle() {
-  assertEquals(throttleReturnTest(() => test(1)), test(1));
+  assertEquals(throttleReturnTest(() => testPromise()), testPromise());
 })
 //end
 
@@ -42,7 +42,7 @@ async function testThrottle(intervalCallLimit: number, intervalTime:number, invo
   let actualInvokeCount = 0;
 
   while (actualInvokeCount < invokeCount) {
-    await throttleTimingTest(() => test()).then(() => {
+    await throttleTimingTest(() => testPromise()).then(() => {
       actualInvokeCount++;
     });
   }
@@ -67,7 +67,7 @@ async function testThrottle(intervalCallLimit: number, intervalTime:number, invo
 
 Deno.test(async function TestThrottle() {
   assertEquals(await testThrottle(1, 10, 3), true);
-  assertEquals(await testThrottle(5, 1000, 5), true);
-  assertEquals(await testThrottle(10, 2000, 10), true);
-  assertEquals(await testThrottle(50, 100, 20), true);
+  assertEquals(await testThrottle(5, 800, 10), true);
+  assertEquals(await testThrottle(5, 200, 15), true);
+  assertEquals(await testThrottle(50, 100, 10), true);
 })
