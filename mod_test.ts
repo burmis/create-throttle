@@ -1,6 +1,4 @@
 import { assertEquals } from "https://deno.land/std@0.167.0/testing/asserts.ts";
-import { createThrottle } from "./mod.ts";
-import { TimeError } from 'https://deno.land/std@0.165.0/testing/time.ts';
 
 // TODO: CLEAN UP FILE SOMEHOW (move helper functions to seperate file and import?)
 
