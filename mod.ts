@@ -23,7 +23,8 @@ export function createThrottle<ThrottleType>({
      * If less than 'period' seconds have passed since the last invocation
      * determine the seconds until the period will have passed and set the
      * timeout to that value
-     **/
+     */
+    
     if (lastInvocation && currentInvocation < lastInvocation + period) {
       timeout = lastInvocation + period - currentInvocation;
     }

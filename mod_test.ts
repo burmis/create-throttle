@@ -1,4 +1,25 @@
-import { assertEquals } from "https://deno.land/std@0.167.0/testing/asserts.ts";
+/*
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+*
+*                                             THROTTLE
+*
+* Throttle is a package that helps limit the number of times a function can be called within a given time
+* interval. Functions are placed in a queue style system and are invoked as time ticks along. This is useful
+* for limiting the number of API calls made to a server, for example.
+*
+* ./mod.ts is the main module of the package.
+* ./mod_test.ts is the test module of the package.
+*
+* CONTRIBUTORS:
+*
+* @byronlanehill
+* @markbennett
+* @nashtronaut
+*
+*  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+*/
+
+import { assertEquals, assertNotEquals } from "https://deno.land/std@0.167.0/testing/asserts.ts";
 import { createThrottle } from "./mod.ts";
 import { FakeTime } from "https://deno.land/std@0.167.0/testing/time.ts";
 
@@ -29,30 +50,28 @@ Deno.test(function testFunctionsAreLimited() {
       });
     };
 
-    // Schedule all the calls to our function
-    throttle(throttledFunction);
-    throttle(throttledFunction);
-    throttle(throttledFunction);
-    throttle(throttledFunction);
-    throttle(throttledFunction);
+    // Schedule all the calls to our function through the throttle. 
+    for (let i = 0; i < 5; i++) {
+      throttle(throttledFunction);
+    }
 
-    // Tick through three periods (1 interval divided by the limit)
-    time.tick(0);
-    time.tick(period);
-    time.tick(period);
-    // Tick to just *before* the interval ends
-    // Subraction of 10ms is to account for the time it takes to run the test
-    time.tick(period - 10);
+    // Tick for first invocation.
+    time.tick(0); 
+    const startTime = time.now;
 
-    // // Confirm that the first 3 calls are invoked immediately
-    assertEquals(count, 3);
+    for (let i = 0; i < 4; i++) {
+      assertNotEquals(count, i + 2); // Check throttle is not ahead of invocation count. 
+      assertEquals(count, i + 1); // Check throttle is on track with invocation count.
+      assertNotEquals(count, i); // Check throttle is not lagging behind invocation count.
+      time.tick(period); // Tick for each subsequent invocation.
 
-    // Confirm that the next 2 calls are invoked after 100ms
-    time.tick(2 * period);
-    assertEquals(count, 5);
+       // Check that throttle is not exceeding the call limit within the interval.
+      if (count > 3 && time.now - startTime < 100) {  
+        throw new Error("Throttle is exceeding call limit.");
+      }
+    }
   } catch (e) {
     time.restore();
-
     throw e;
   } finally {
     try {
