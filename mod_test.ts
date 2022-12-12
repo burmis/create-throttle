@@ -19,7 +19,10 @@
 *  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
 
-import { assertEquals, assertNotEquals } from "https://deno.land/std@0.167.0/testing/asserts.ts";
+import {
+  assertEquals,
+  assertNotEquals,
+} from "https://deno.land/std@0.167.0/testing/asserts.ts";
 import { createThrottle } from "./mod.ts";
 import { FakeTime } from "https://deno.land/std@0.167.0/testing/time.ts";
 
@@ -50,23 +53,23 @@ Deno.test(function testFunctionsAreLimited() {
       });
     };
 
-    // Schedule all the calls to our function through the throttle. 
+    // Schedule all the calls to our function through the throttle.
     for (let i = 0; i < 5; i++) {
       throttle(throttledFunction);
     }
 
     // Tick for first invocation.
-    time.tick(0); 
+    time.tick(0);
     const startTime = time.now;
 
     for (let i = 0; i < 4; i++) {
-      assertNotEquals(count, i + 2); // Check throttle is not ahead of invocation count. 
+      assertNotEquals(count, i + 2); // Check throttle is not ahead of invocation count.
       assertEquals(count, i + 1); // Check throttle is on track with invocation count.
       assertNotEquals(count, i); // Check throttle is not lagging behind invocation count.
       time.tick(period); // Tick for each subsequent invocation.
 
-       // Check that throttle is not exceeding the call limit within the interval.
-      if (count > 3 && time.now - startTime < 100) {  
+      // Check that throttle is not exceeding the call limit within the interval.
+      if (count > 3 && time.now - startTime < 100) {
         throw new Error("Throttle is exceeding call limit.");
       }
     }
