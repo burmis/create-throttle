@@ -1,6 +1,6 @@
 import { assertEquals } from "https://deno.land/std@0.167.0/testing/asserts.ts";
 import { createThrottle } from "./mod.ts";
-import { TimeError } from "https://deno.land/std@0.167.0/testing/time.ts";
+import { FakeTime } from "https://deno.land/std@0.167.0/testing/time.ts";
 
 Deno.test(function testCreateThrottle() {
   const testPromise = Promise.resolve("test");
@@ -10,71 +10,55 @@ Deno.test(function testCreateThrottle() {
   assertEquals(throttle(createFunction), testPromise);
 });
 
-//Test throttle is operating correctly
-async function testThrottle(
-  intervalCallLimit: number,
-  intervalTime: number,
-  invokeCount: number
-): Promise<boolean> {
-  //Create test throttle
-  const throttleTimingTest = createThrottle({
-    limit: intervalCallLimit,
-    interval: intervalTime,
-  });
+Deno.test(function testFunctionsAreLimited() {
+  // Switch to a fake timer
+  const time = new FakeTime();
 
-  //Test pass/failure time.
-  // Subtract one interval to account for immediate initial invocation.
-  const expectedMinTime =
-    (invokeCount / intervalCallLimit) * intervalTime - intervalTime;
+  try {
+    // Create a test throttle with a 100ms limit and a maximum of 3 calls per 100ms
+    const throttle = createThrottle({ limit: 3, interval: 100 });
+    const period = Math.ceil(100 / 3);
 
-  //Begin test
-  const startTime = new Date();
+    // Invoke the throttle 5 times
+    let count = 0;
+    const throttledFunction = () => {
+      console.log("throttledFunction");
+      return new Promise((resolve) => {
+        count++;
+        resolve(count);
+      });
+    };
 
-  let actualInvokeCount = 0;
+    // Schedule all the calls to our function
+    throttle(throttledFunction);
+    throttle(throttledFunction);
+    throttle(throttledFunction);
+    throttle(throttledFunction);
+    throttle(throttledFunction);
 
-  while (actualInvokeCount < invokeCount) {
-    await throttleTimingTest(() => Promise.resolve()).then(() => {
-      actualInvokeCount++;
-    });
-  }
+    // Tick through three periods (1 interval divided by the limit)
+    time.tick(0);
+    time.tick(period);
+    time.tick(period);
+    // Tick to just *before* the interval ends
+    // Subraction of 10ms is to account for the time it takes to run the test
+    time.tick(period - 10);
 
-  const endTime = new Date();
+    // // Confirm that the first 3 calls are invoked immediately
+    assertEquals(count, 3);
 
-  const actualTime = endTime.getTime() - startTime.getTime();
+    // Confirm that the next 2 calls are invoked after 100ms
+    time.tick(2 * period);
+    assertEquals(count, 5);
+  } catch (e) {
+    time.restore();
 
-  console.log(
-    "testing throttle with " +
-      invokeCount +
-      " invokes with " +
-      intervalCallLimit +
-      " calls per " +
-      intervalTime +
-      "ms"
-  );
-
-  if (actualTime < expectedMinTime) {
-    throw new TimeError(
-      `Expected time to be longer than ${expectedMinTime} but was ${actualTime}`
-    );
-  }
-
-  if (actualInvokeCount !== invokeCount) {
-    throw new Error(
-      `Expected invoke count to be ${invokeCount} but was ${actualInvokeCount}`
-    );
-  }
-
-  console.log("test ... ok");
-  return Promise.resolve(true);
-}
-
-Deno.test(async function TestThrottle() {
-  // Run five random tests
-  for (let i = 0; i < 5; i++) {
-    const limit = Math.floor(Math.random() * 10) + 1;
-    const interval = Math.floor(Math.random() * 200) + 1;
-    const invokeCount = Math.floor(Math.random() * 10) + 1;
-
-    assertEquals(await testThrottle(limit, interval, invokeCount), true);
+    throw e;
+  } finally {
+    try {
+      time.restore();
+    } catch (_e) {
+      // Sometimes time is already restored, so we don't care about this.
+    }
   }
 });
